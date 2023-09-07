@@ -32,8 +32,11 @@ const taskSlice = createSlice({
 		modifyTask: (state, payload: PayloadAction<ModifyTaskPayload>) => {
 			state.tasks[payload.payload.key] = { ...payload.payload.modifiedTask }
 		},
+		clearAll: (state) => {
+			state.tasks = []
+		}
 	},
 })
 
-export const { addTask, modifyTask, removeTask } = taskSlice.actions
+export const { addTask, modifyTask, removeTask, clearAll } = taskSlice.actions
 export const taskReducer = taskSlice.reducer

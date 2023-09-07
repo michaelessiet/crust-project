@@ -6,13 +6,13 @@ import {
 	Modal,
 	TextInput,
 	TouchableWithoutFeedback,
+	KeyboardAvoidingView,
 } from "react-native"
 import React, { useState } from "react"
 import { Task, modifyTask, removeTask } from "../store/slices/tasks"
 import { useAppDispatch } from "../hooks/reduxHooks"
 import { truncateText } from "../utils/utils"
-import { SafeAreaView } from "react-native-safe-area-context"
-import InputField from "./InputField"
+import Checkbox from "expo-checkbox"
 
 interface Props {
 	task: Task
@@ -30,6 +30,7 @@ const TaskCard = (props: Props) => {
 	}
 
 	function handleModify() {
+		setIsModalVisible(false)
 		dispatch(
 			modifyTask({
 				key: props.index,
@@ -42,6 +43,15 @@ const TaskCard = (props: Props) => {
 		)
 	}
 
+	function handleCompletionToggle(value: boolean) {
+		dispatch(
+			modifyTask({
+				key: props.index,
+				modifiedTask: { ...props.task, completed: value },
+			})
+		)
+	}
+
 	return (
 		<>
 			<Modal
@@ -50,49 +60,54 @@ const TaskCard = (props: Props) => {
 				presentationStyle="overFullScreen"
 				transparent
 			>
-				<TouchableOpacity
-					onPress={() => setIsModalVisible(false)}
-					activeOpacity={1}
-					style={{
-						backgroundColor: "rgba(0,0,0,0.5)",
-						flexDirection: "column",
-						height: "100%",
-						justifyContent: "flex-end",
-					}}
-				>
-					<TouchableWithoutFeedback>
-						<View
-							style={{
-								alignSelf: "baseline",
-								backgroundColor: "white",
-								borderRadius: 32,
-								padding: 32,
-								width: "100%",
-								gap: 9,
-							}}
-						>
-							<View style={{ alignSelf: "flex-end" }}>
-								<Button
-									title="Close"
-									onPress={() => setIsModalVisible(false)}
+				<KeyboardAvoidingView behavior="padding">
+					<TouchableOpacity
+						onPress={() => setIsModalVisible(false)}
+						activeOpacity={1}
+						style={{
+							backgroundColor: "rgba(0,0,0,0.5)",
+							flexDirection: "column",
+							height: "100%",
+							justifyContent: "flex-end",
+						}}
+					>
+						<TouchableWithoutFeedback>
+							<View
+								style={{
+									alignSelf: "baseline",
+									backgroundColor: "white",
+									borderTopRightRadius: 32,
+									borderTopLeftRadius: 32,
+									padding: 32,
+									width: "100%",
+									gap: 9,
+								}}
+							>
+								<View style={{ alignSelf: "flex-end" }}>
+									<Button
+										title="Close"
+										onPress={() => {
+											setIsModalVisible(false)
+										}}
+									/>
+								</View>
+
+								<TextInput
+									value={title}
+									onChangeText={setTitle}
+									style={{ fontSize: 28, fontWeight: "bold" }}
 								/>
+								<TextInput
+									value={description}
+									onChangeText={setDescription}
+									multiline
+								/>
+
+								<Button title="Save" onPress={handleModify} />
 							</View>
-
-							<TextInput
-								value={title}
-								onChangeText={setTitle}
-								style={{ fontSize: 28, fontWeight: "bold" }}
-							/>
-							<TextInput
-								value={description}
-								onChangeText={setDescription}
-								multiline
-							/>
-
-							<Button title="Save" onPress={handleModify} />
-						</View>
-					</TouchableWithoutFeedback>
-				</TouchableOpacity>
+						</TouchableWithoutFeedback>
+					</TouchableOpacity>
+				</KeyboardAvoidingView>
 			</Modal>
 			<TouchableOpacity
 				key={props.task.id}
@@ -102,20 +117,33 @@ const TaskCard = (props: Props) => {
 					flexDirection: "row",
 					justifyContent: "space-between",
 					alignItems: "center",
-					opacity: props.task.completed ? .5 : 1
+					opacity: props.task.completed ? 0.5 : 1,
 				}}
 			>
-				<View style={{ maxWidth: "70%", gap: 6 }}>
-					<Text style={{ fontSize: 18, fontWeight: "bold" }}>
-						{truncateText(props.task.title, 30)}
-					</Text>
-					<Text style={{ opacity: 0.7 }}>{props.task.description}</Text>
+				<View
+					style={{
+						maxWidth: "70%",
+						gap: 6,
+						flexDirection: "row",
+						alignItems: "center",
+						columnGap: 12,
+					}}
+				>
+					<Checkbox
+						value={props.task.completed}
+						onValueChange={handleCompletionToggle}
+					/>
+					<View>
+						<Text style={{ fontSize: 18, fontWeight: "bold" }}>
+							{truncateText(props.task.title, 30)}
+						</Text>
+						<Text style={{ opacity: 0.7 }}>{props.task.description}</Text>
+					</View>
 				</View>
 
 				<Text onPress={handleRemove} style={{ color: "red" }}>
 					Remove
 				</Text>
-				
 			</TouchableOpacity>
 		</>
 	)

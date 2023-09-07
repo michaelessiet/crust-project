@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, Dimensions } from "react-native"
+import { View, Text, SafeAreaView, Dimensions, KeyboardAvoidingView } from "react-native"
 import React, { useState } from "react"
 import InputField from "../../components/InputField"
 import Button from "../../components/Button"
@@ -89,7 +89,7 @@ const LogInScreen = () => {
 	}
 
 	return (
-		<SafeAreaView
+		<KeyboardAvoidingView
 			style={{
 				justifyContent: "center",
 				height: Dimensions.get("screen").height,
@@ -142,12 +142,12 @@ const LogInScreen = () => {
 				Don't have an account?{" "}
 				<Text
 					style={{ color: "orange" }}
-					onPress={() => nav.navigate("register")}
+					onPress={() => nav.dispatch(StackActions.replace('register'))}
 				>
 					Register
 				</Text>
 			</Text>
-		</SafeAreaView>
+		</KeyboardAvoidingView>
 	)
 }
 

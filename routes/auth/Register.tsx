@@ -1,5 +1,5 @@
-import { View, Text, SafeAreaView, Dimensions } from "react-native"
-import React, { useState } from "react"
+import { View, Text, SafeAreaView, Dimensions, KeyboardAvoidingView } from "react-native"
+import React, { useEffect, useState } from "react"
 import InputField from "../../components/InputField"
 import Button from "../../components/Button"
 import { StackActions, useNavigation } from "@react-navigation/native"
@@ -7,6 +7,11 @@ import storage from "../../utils/storage"
 import { ErrorMessages } from "../../utils/types"
 import { validateInput } from "../../utils/formValidator"
 import ErrorChip from "../../components/ErrorChip"
+import FilesystemStorage from "redux-persist-filesystem-storage"
+import { STORAGE_KEYS } from "../../utils/constants"
+import WarningChip from "../../components/WarningChip"
+import { useAppDispatch } from "../../hooks/reduxHooks"
+import { clearAll } from "../../store/slices/tasks"
 
 const defaultErrorState = {
 	username: null,
@@ -16,18 +21,31 @@ const defaultErrorState = {
 
 const RegisterScreen = () => {
 	const nav = useNavigation()
+	const dispatch = useAppDispatch()
 	const [username, setUsername] = useState("")
 	const [password, setPassword] = useState("")
+	const [hasAccount, setHasAccount] = useState(false)
 	const [errorMessages, setErrorMessages] = useState<ErrorMessages>({
 		username: null,
 		password: null,
 		general: null,
 	})
 
+	useEffect(() => {
+		;(async () => {
+			const storedUsername = await storage.getItemAsync(STORAGE_KEYS.username)
+			setHasAccount(typeof storedUsername === "string")
+		})()
+	}, [])
+
 	async function registerUser() {
 		await storage.setItemAsync("username", username)
 		await storage.setItemAsync("password", password)
-		nav.dispatch(StackActions.replace("task manager"))
+		await FilesystemStorage.clear((error) => {
+			if (error) throw error
+			dispatch(clearAll())
+			nav.dispatch(StackActions.replace("task manager"))
+		})
 	}
 
 	async function validate() {
@@ -74,7 +92,7 @@ const RegisterScreen = () => {
 	}
 
 	return (
-		<SafeAreaView
+		<KeyboardAvoidingView
 			style={{
 				justifyContent: "center",
 				height: Dimensions.get("screen").height,
@@ -94,6 +112,10 @@ const RegisterScreen = () => {
 			</Text>
 			{errorMessages.general ? (
 				<ErrorChip message={errorMessages.general} />
+			) : null}
+
+			{hasAccount ? (
+				<WarningChip message="You seem to already have an account on this device. Please note that if you register a new account on this device all your currently saved tasks will be erased." />
 			) : null}
 
 			<InputField
@@ -124,11 +146,11 @@ const RegisterScreen = () => {
 
 			<Text style={{ textAlign: "center" }}>
 				Already have an account?{" "}
-				<Text style={{ color: "orange" }} onPress={() => nav.navigate("login")}>
+				<Text style={{ color: "orange" }} onPress={() => nav.dispatch(StackActions.replace('login'))}>
 					Log In
 				</Text>
 			</Text>
-		</SafeAreaView>
+		</KeyboardAvoidingView>
 	)
 }
 
