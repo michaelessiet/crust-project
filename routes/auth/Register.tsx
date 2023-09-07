@@ -2,7 +2,7 @@ import { View, Text, SafeAreaView, Dimensions } from "react-native"
 import React, { useState } from "react"
 import InputField from "../../components/InputField"
 import Button from "../../components/Button"
-import { useNavigation } from "@react-navigation/native"
+import { StackActions, useNavigation } from "@react-navigation/native"
 import storage from "../../utils/storage"
 import { ErrorMessages } from "../../utils/types"
 import { validateInput } from "../../utils/formValidator"
@@ -27,7 +27,7 @@ const RegisterScreen = () => {
 	async function registerUser() {
 		await storage.setItemAsync("username", username)
 		await storage.setItemAsync("password", password)
-		nav.navigate("task manager")
+		nav.dispatch(StackActions.replace("task manager"))
 	}
 
 	async function validate() {
@@ -109,7 +109,6 @@ const RegisterScreen = () => {
 
 			<InputField
 				placeholder="password"
-				secureTextEntry
 				value={password}
 				onChangeText={(text) => setPassword(text)}
 			/>

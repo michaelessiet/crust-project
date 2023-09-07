@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import * as Crypto from "expo-crypto"
 import { deleteItemById } from "../../utils/utils"
 
-interface Task {
+export interface Task {
 	completed: boolean
 	description: string
 	title: string
@@ -14,23 +14,23 @@ interface ModifyTaskPayload {
 	modifiedTask: Task
 }
 
-const initialValue: Task[] = []
+const initialValue: {tasks: Task[]} = {tasks: []}
 
 const taskSlice = createSlice({
 	name: "tasks",
 	initialState: initialValue,
 	reducers: {
 		addTask: (state, payload: PayloadAction<Task>) => {
-			const task = { ...payload.payload, id: Crypto.randomUUID() }
-			const temp = [...state, task]
-			state = temp
+			const task = payload.payload
+			const temp = [...state.tasks, task]
+			state.tasks = temp
 		},
 		removeTask: (state, payload: PayloadAction<string>) => {
-			const temp = deleteItemById(state, "id", payload.payload)
-			state = temp
+			const temp = deleteItemById(state.tasks, "id", payload.payload)
+			state.tasks = temp
 		},
 		modifyTask: (state, payload: PayloadAction<ModifyTaskPayload>) => {
-			state[payload.payload.key] = { ...payload.payload.modifiedTask }
+			state.tasks[payload.payload.key] = { ...payload.payload.modifiedTask }
 		},
 	},
 })

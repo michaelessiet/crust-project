@@ -1,4 +1,4 @@
-enum STORAGE_KEYS {
+export enum STORAGE_KEYS {
 	username='username',
 	password='password',
 }

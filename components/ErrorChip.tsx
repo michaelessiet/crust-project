@@ -11,7 +11,7 @@ const ErrorChip = ({ message }: { message: string }) => {
 
 const styles = StyleSheet.create({
 	errorContainer: {
-		backgroundColor: "rgba(255, 0, 0, .5)",
+		backgroundColor: "rgba(255, 0, 0, .2)",
 		padding: 8,
 		borderRadius: 8,
 		marginBottom: 10,

@@ -19,7 +19,11 @@ export default function App() {
 				<Stack.Navigator screenOptions={{ headerShown: false }}>
 					<Stack.Screen name="login" component={LogInScreen} />
 					<Stack.Screen name="register" component={RegisterScreen} />
-					<Stack.Screen name="task manager" component={TaskManagerScreen} />
+					<Stack.Screen
+						name="task manager"
+						component={TaskManagerScreen}
+						options={{ headerShown: true, headerTitle: "Task Manager" }}
+					/>
 				</Stack.Navigator>
 			</NavigationContainer>
 		</Provider>

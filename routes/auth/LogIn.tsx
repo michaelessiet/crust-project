@@ -2,11 +2,12 @@ import { View, Text, SafeAreaView, Dimensions } from "react-native"
 import React, { useState } from "react"
 import InputField from "../../components/InputField"
 import Button from "../../components/Button"
-import { useNavigation } from "@react-navigation/native"
+import { StackActions, useNavigation } from "@react-navigation/native"
 import storage from "../../utils/storage"
 import { ErrorMessages } from "../../utils/types"
 import { validateInput } from "../../utils/formValidator"
 import ErrorChip from "../../components/ErrorChip"
+import { STORAGE_KEYS } from "../../utils/constants"
 
 const defaultErrorState = {
 	username: null,
@@ -25,15 +26,27 @@ const LogInScreen = () => {
 	})
 
 	async function login() {
-		const storedUsername = await storage.getItemAsync(STORAGE_KEYS.username)
-		const storedPassword = await storage.getItemAsync(STORAGE_KEYS.password)
+		try {
+			const storedUsername = await storage.getItemAsync(STORAGE_KEYS.username)
+			const storedPassword = await storage.getItemAsync(STORAGE_KEYS.password)
 
-		const isUsernameSame = storedUsername === username
-		const isPasswordSame = storedPassword === password
+			const isUsernameSame = storedUsername === username
+			const isPasswordSame = storedPassword === password
 
-		if (isUsernameSame && isPasswordSame) nav.navigate("task manager")
-		else
-			setErrorMessages((prev) => ({ ...prev, general: "Invalid Credentials" }))
+			if (isUsernameSame && isPasswordSame)
+				nav.dispatch(StackActions.replace("task manager"))
+			else
+				setErrorMessages((prev) => ({
+					...prev,
+					general: "Invalid Credentials",
+				}))
+		} catch (error) {
+			console.log(error)
+			setErrorMessages((prev) => ({
+				...prev,
+				general: "Sorry couldn't retrieve your credentials from the device.",
+			}))
+		}
 	}
 
 	async function validate() {
