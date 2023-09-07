@@ -4,12 +4,16 @@ import LogInScreen from "./routes/auth/LogIn"
 import RegisterScreen from "./routes/auth/Register"
 import TaskManagerScreen from "./routes/task manager"
 import { StatusBar } from "expo-status-bar"
+import { Provider } from "react-redux"
+import { persistedStore, store } from "./store"
+import { PersistGate } from "redux-persist/integration/react"
 
 const Stack = createNativeStackNavigator()
 
 export default function App() {
 	return (
-		<>
+		<Provider store={store}>
+			<PersistGate persistor={persistedStore}></PersistGate>
 			<StatusBar />
 			<NavigationContainer>
 				<Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -18,6 +22,6 @@ export default function App() {
 					<Stack.Screen name="task manager" component={TaskManagerScreen} />
 				</Stack.Navigator>
 			</NavigationContainer>
-		</>
+		</Provider>
 	)
 }
