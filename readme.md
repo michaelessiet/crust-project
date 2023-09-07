@@ -16,6 +16,8 @@ npm install
 npx pod-install
 ```
 
+**Note**: A prerequisite for you to run this command is a MacOS machine with XCode properly installed on it. Same goes for the `npm run ios` command below
+
 3. Run the application using one of the following commands:
 
 ```bash
